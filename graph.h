@@ -61,7 +61,7 @@ void graph::ShortestPath(int A,int B){
 	int end = B;
 	heap.insert(eyeNode);
 
-	while(!heap.empty() && !heap.root(nodes[end])){             //root method will take a node as a parameter and determine if that node is the root
+	while(!heap.empty() && !heap.isRoot(nodes[end])){             //root method will take a node as a parameter and determine if that node is the root
 														//if end holds the smallest value in heap you know you reached the shortest path because 
 														//all other nodes are further from the orgin
 		for(int k=0; k< size; k++){
