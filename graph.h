@@ -1,3 +1,6 @@
+#include <vector>
+using namespace std;
+
 class binheap;
 
 struct node {
@@ -8,3 +11,10 @@ struct node {
 
 #include "binheap.h"
 
+class graph{
+	private:
+		vector<node>* edges;
+		binheap heap;//choose a better name?
+	public:
+		
+};
