@@ -56,32 +56,32 @@ graph::graph(int graph_size){
 //input: indeces of nodes in matrix for begin and end point of desired path
 //output: for now, array of indeces could be set to object's "path" array for shortest path... maybe change to LinkedList?
 void graph::ShortestPath(int A,int B){
-	int current = A;
-	node* currentNode = nodes[current];
+	int eye = A;      //eye is the eye
+	node* eyeNode = nodes[eye];
 	int end = B;
-	heap.insert(currentNode);
+	heap.insert(eyeNode);
 
-	while(!heap.Empty() && !heap.Root(nodes[end])){        //root method will take a node as a parameter and determine if that node is the root
-														//if end holds the smallest value in heap you know you reached the shortest path because  											//all other nodes are further from the orgin
-		for(int i=0; i< size; i++){
-			if(matrix[current][i] != -1){      			//if there's a connection
-				if(nodes[current]->cost + matrix[current][i] < nodes[i]->cost) || (nodes[i]->cost == -1)){   //if the eye's distance from orgin + endgelength  less than tentative node distance
-						nodes[i]->cost = nodes[current]->cost + matrix[current][i];
-						nodes[i]->previous = currentNode;
-						heap.Insert(nodes[i]);
+	while(!heap.empty() && !heap.root(nodes[end])){             //root method will take a node as a parameter and determine if that node is the root
+														//if end holds the smallest value in heap you know you reached the shortest path because 
+														//all other nodes are further from the orgin
+		for(int k=0; k< size; k++){
+			if(matrix[eye][k] != -1){      //if there's a connection from the eye to the indexed node. Two if statements are for clarity
+				if(nodes[eye]->cost + matrix[eye][k] < nodes[k]->cost || nodes[k]->cost == -1){   //if the eye's distance from orgin + endgelength  less than what the node currently costs
+						nodes[k]->cost = nodes[eye]->cost + matrix[eye][k];
+						nodes[k]->previous = eyeNode;
+						heap.Insert(nodes[k]);
 				}
-				//if the path is not shorter nothing changes
+				//if the path is longer nothing changes
 			}
 		}
 
-		currentNode = heap.Remove();              
-		current = currentNode.location;       
-		
+		eyeNode = heap.Remove();              
+		eye = eyenode.location;
 	}
 
 
 	//after above while loop has run we will start at the end and trace our way back pushing nodes onto a stack. we will return the stack
-	//and the user can pop off nodes to find the path
+	//and the user of this function can pop off nodes to find the shortest path in order
 		
 }
 
