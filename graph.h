@@ -1,4 +1,5 @@
 #include <vector>
+#include "binheap.h"
 using namespace std;
 
 class binheap;
@@ -10,14 +11,12 @@ struct node {
     node operator=(const node &n);
 };
 
-#include "binheap.h"
+
 
 class graph{
 	private:
-		int size;//number of nodes in graph
-		node* nodes;//container for all nodes in graph; indeces correspond to 1st matrix indeces
-		//matrix:
-		//this will be a 2d array that stores weighted edge values, or -1 for nonexistent
+		int size;   //nodes in graph
+		node* nodes;//container for all nodes in graph
 		int** matrix;
 		binheap* heap;//choose a better name?
 		node ** path;//array that will store the path found; better ideas for this?
@@ -25,15 +24,8 @@ class graph{
 	public:
 		graph():size(0){};
 		graph(int graph_size);
-		void ShortestPath(int A, int B);//returns array of indeces of shortest path.. I'm thinking we should use LinkedList here instead
-		//I added insert edge just for convenience.
-		//Technically it's not necessary since our graph can be static,
-		//but it seems much simpler to add edges by making a simple
-		//function call in our driver program, rather than
-		//doing it with overloaded constructor parameters
-		//or some other weird jazz.
-		//By the way we, shouldn't need a function to remove edges.
-		void InsertEdge(int from, int to, int weight);//This also updates existing edges
+		void ShortestPath(int A, int B);
+		void InsertEdge(int from, int to, int weight); //This also updates existing edges
 };
 
 node node::operator=(const node &n){
@@ -49,16 +41,11 @@ graph::graph(int graph_size){
 	nodes = new node[size];
 	matrix = new int*[size];
 	heap = new binheap(size);
-	//create nodes, insert them into matrix, and map them to matrix
+
 	for(int i=0;i<size;i++){
-		//create node, and store in matrix[i][i]
-		//(this is more efficient than creating a separate array.
-		//since we won't allow an edge between a node and itself,
-		//it is ok to use matrix[i][i] for this purpose.)
-		nodes[i].cost = -1;//using -1 to represent infinity
-		nodes[i].prev = 0;//referrer is null by default
-		nodes[i].location = i;//this way a node knows its location in the matrix and list
-		//set all edges to empty (represented by -1)
+		nodes[i].cost = -1;           
+		nodes[i].prev = 0;
+		nodes[i].location = i;
 		matrix[i] = new int[size];
 		for(int j=0;j<size;j++){
 			matrix[i][j] = -1;
@@ -69,10 +56,33 @@ graph::graph(int graph_size){
 //input: indeces of nodes in matrix for begin and end point of desired path
 //output: for now, array of indeces could be set to object's "path" array for shortest path... maybe change to LinkedList?
 void graph::ShortestPath(int A,int B){
-	node* a = &nodes[A];//get actual node pointer corresponding index from list
-	node* b = &nodes[B];
-	a->cost = 0;//of course, the cost to get to where you start is 0; this prevents going back to origin and makes final path traceback easier.
-	Explore(a,b);
+	int eye = A;      //eye is the eye
+	node* eyeNode = nodes[eye];
+	int end = B;
+	heap.insert(eyeNode);
+
+	while(!heap.empty() && !heap.isRoot(nodes[end])){             //root method will take a node as a parameter and determine if that node is the root
+														//if end holds the smallest value in heap you know you reached the shortest path because 
+														//all other nodes are further from the orgin
+		for(int k=0; k< size; k++){
+			if(matrix[eye][k] != -1){      //if there's a connection from the eye to the indexed node. Two if statements are for clarity
+				if(nodes[eye]->cost + matrix[eye][k] < nodes[k]->cost || nodes[k]->cost == -1){   //if the eye's distance from orgin + endgelength  less than what the node currently costs
+						nodes[k]->cost = nodes[eye]->cost + matrix[eye][k];
+						nodes[k]->previous = eyeNode;
+						heap.Insert(nodes[k]);
+				}
+				//if the path is longer nothing changes
+			}
+		}
+
+		eyeNode = heap.Remove();              
+		eye = eyenode.location;
+	}
+
+
+	//after above while loop has run we will start at the end and trace our way back pushing nodes onto a stack. we will return the stack
+	//and the user of this function can pop off nodes to find the shortest path in order
+		
 }
 
 void graph::Explore(node* current, node* destination){
