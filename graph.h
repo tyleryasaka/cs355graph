@@ -75,12 +75,8 @@ void graph::ShortestPath(int A,int B){
 		}
 
 		currentNode = heap.Remove();              
-		for( int i = 0; i < size; i++){
-			if(currentNode == nodes[i]){  	//linear search to find index corresponding to the node
-				current = i;         		//changes the eye
-				break;
-			}             
-		}
+		current = currentNode.location;       
+		
 	}
 
 
