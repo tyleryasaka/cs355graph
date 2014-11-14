@@ -3,7 +3,9 @@
 
 class binheap {
     private:
-        node* heap[];
+        node** heap;
+        //double asterisk because this is an array of pointers
+		//(pointer to pointers)
         int size;
     public:
         bool Insert(node* n);

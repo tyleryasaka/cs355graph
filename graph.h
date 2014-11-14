@@ -13,8 +13,9 @@ struct node {
 
 class graph{
 	private:
-		vector<node>* edges;
+		vector<node>* edges;//Our adjacency list
 		binheap heap;//choose a better name?
+		void Explore(node* from, node* to);//Recursive function that actually looks at nodes and finds shortest path; called by ShortestPath
 	public:
-		
+		node** ShortestPath(node* A, node* B);//returns array of pointers (pointer to pointers)
 };
