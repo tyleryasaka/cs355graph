@@ -61,9 +61,8 @@ void graph::ShortestPath(int A,int B){
 	int end = B;
 	heap.insert(eyeNode);
 
-	while(!heap.empty() && !heap.isRoot(nodes[end])){             //root method will take a node as a parameter and determine if that node is the root
-														//if end holds the smallest value in heap you know you reached the shortest path because 
-														//all other nodes are further from the orgin
+	while(!heap.empty() && nodes[end] != heap.Min()){             //root method will take a node as a parameter and determine if that node is the root
+														//if end holds the smallest value in heap you know you reached the shortest path because 											//all other nodes are further from the orgin
 		for(int k=0; k< size; k++){
 			if(matrix[eye][k] != -1){      //if there's a connection from the eye to the indexed node. Two if statements are for clarity
 				if(nodes[eye]->cost + matrix[eye][k] < nodes[k]->cost || nodes[k]->cost == -1){   //if the eye's distance from orgin + endgelength  less than what the node currently costs
