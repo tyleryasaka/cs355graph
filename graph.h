@@ -1,7 +1,5 @@
 #include "node.h"
-class binheap;
 #include "binheap.h"
-
 
 class graph{
 	private:
@@ -17,13 +15,6 @@ class graph{
 		void ShortestPath(int A, int B);
 		void InsertEdge(int from, int to, int weight); //This also updates existing edges
 };
-
-node node::operator=(const node &n){
-	cost = n.cost;
-	prev = n.prev;
-	location = n.location;
-	return *this;
-}
 
 //overloaded constructor
 graph::graph(int graph_size){
@@ -65,7 +56,7 @@ void graph::ShortestPath(int A,int B){
 		}
 
 		eyeNode = *heap->Remove();              
-		eye = eyenode.location;
+		eye = eyeNode.location;
 	}
 
 
@@ -73,8 +64,6 @@ void graph::ShortestPath(int A,int B){
 	//and the user of this function can pop off nodes to find the shortest path in order
 		
 }
-
-
 
 void graph::InsertEdge(int from, int to, int weight){
 	if(from > 0 && from < size && to > 0 && to < size){

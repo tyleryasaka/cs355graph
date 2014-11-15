@@ -2,8 +2,6 @@
 #define BINHEAP_H
 #include "node.h"
 
-
-
 class binheap {
     private:
 		//the heap:
@@ -21,8 +19,6 @@ class binheap {
         node* Min()const;
         bool empty();
 };
-
-
 
 //overloaded constructor
 binheap::binheap(int heap_size){

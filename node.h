@@ -8,6 +8,11 @@ struct node{
     node operator=(const node &n);
 };
 
-
+node node::operator=(const node &n){
+	cost = n.cost;
+	prev = n.prev;
+	location = n.location;
+	return *this;
+}
 
 #endif 
