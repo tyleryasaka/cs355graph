@@ -50,42 +50,52 @@ graph::graph(int graph_size){
 //output: for now, array of indeces could be set to object's "path" array for shortest path... maybe change to LinkedList?
 stack<int> graph::ShortestPath(int A,int B){
 	int eye = A;  
-	node startNode = nodes[eye];
 	node eyeNode = nodes[eye];
 	int end = B;
+	
+	
+	eyeNode.cost = 0;
 	
 	heap->Insert(&eyeNode);
 	stack<int> path;
 
 	while(!heap->empty() && &(nodes[end]) != heap->Min()){             //root method will take a node as a parameter and determine if that node is the root
-														//if end holds the smallest value in heap you know you reached the shortest path because 											//all other nodes are further from the orgin
+			eyeNode = *(heap->Remove());              
+		eye = eyeNode.location;
+		cout<<eye<<endl; 	
+													//if end holds the smallest value in heap you know you reached the shortest path because 											//all other nodes are further from the orgin
 		for(int k=0; k < size; k++){
 			if(matrix[eye][k] != -1){      //if there's a connection from the eye to the indexed node. Two if statements are for clarity
 				if(nodes[eye].cost + matrix[eye][k] < nodes[k].cost || nodes[k].cost == -1){   //if the eye's distance from orgin + endgelength  less than what the node currently costs
-						nodes[k].cost = nodes[eye].cost + matrix[eye][k];
+						if(nodes[eye].cost>-1)
+							nodes[k].cost = nodes[eye].cost + matrix[eye][k];
+						else 
+							nodes[k].cost = nodes[eye].cost + matrix[eye][k] + 1;
+							
 						nodes[k].prev = &eyeNode;
 						cout<<eye<<" is connected to "<<nodes[k].location<<endl;
 						heap->Insert(&nodes[k]);
 				}
-				//if the path is longer nothing changes
+				
 			}
 		}
-		cout<<eye<<endl;  //this should change to 1 instead it stays at 0
-		eyeNode = *(heap->Remove());              
-		eye = eyeNode.location;
+		 //this should change to 1 instead it stays at 0
+
 	}
 	
 	
-	if(eye != end){
+	if(nodes[end].cost == -1){
 		cout<<"Path is not connected";
 	}
 	
 	else{
-		while(eyeNode.location != startNode.location){
-			path.push(eyeNode.location);
-			eyeNode = *(eyeNode.prev);
+		int current = end;
+		while(nodes[current].cost != 0){
+			path.push(current);
+			current = nodes[current].prev->location;
 		}
-		path.push(startNode.location);
+		 
+		
 	}
 	
 
