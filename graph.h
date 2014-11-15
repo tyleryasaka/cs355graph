@@ -1,5 +1,4 @@
 #include "node.h"
-class binheap;
 #include "binheap.h"
 #include <stack>
 #include <iostream>
@@ -21,14 +20,6 @@ class graph{
 		vector<int> ShortestPath(int A, int B);
 		void InsertEdge(int from, int to, int weight); //This also updates existing edges
 };
-/*
-node node::operator=(const node &n){
-	cost = n.cost;
-	prev = n.prev;
-	location = n.location;
-	return *this;
-}
-*/
 
 //overloaded constructor
 graph::graph(int graph_size){
@@ -87,15 +78,6 @@ vector<int> graph::ShortestPath(int start,int end){
 	
 	return returnPath;
 }
-
-
-
-
-
-
-
-
-
 
 void graph::InsertEdge(int from, int to, int weight){
 	if(from >= 0 && from < size && to >= 0 && to < size){
