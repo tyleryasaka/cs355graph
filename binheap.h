@@ -16,7 +16,10 @@ class binheap {
         void Insert(node* n);
         node* Remove();
         node* Min()const;
+        bool empty();
 };
+
+
 
 //overloaded constructor
 binheap::binheap(int heap_size){
@@ -109,6 +112,12 @@ void binheap::SwapNode(int i, int j){
 	node* temp = heap[i];
 	heap[i] = heap [j];
 	heap[j] = temp;
+}
+
+
+//sees if heap is empty by where the last index is
+bool binheap::empty(){
+	return (last == -1);
 }
 
 #endif

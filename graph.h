@@ -61,9 +61,8 @@ void graph::ShortestPath(int A,int B){
 	int end = B;
 	heap.insert(eyeNode);
 
-	while(!heap.empty() && !heap.isRoot(nodes[end])){             //root method will take a node as a parameter and determine if that node is the root
-														//if end holds the smallest value in heap you know you reached the shortest path because 
-														//all other nodes are further from the orgin
+	while(!heap.empty() && nodes[end] != heap.Min()){             //root method will take a node as a parameter and determine if that node is the root
+														//if end holds the smallest value in heap you know you reached the shortest path because 											//all other nodes are further from the orgin
 		for(int k=0; k< size; k++){
 			if(matrix[eye][k] != -1){      //if there's a connection from the eye to the indexed node. Two if statements are for clarity
 				if(nodes[eye]->cost + matrix[eye][k] < nodes[k]->cost || nodes[k]->cost == -1){   //if the eye's distance from orgin + endgelength  less than what the node currently costs
@@ -85,36 +84,7 @@ void graph::ShortestPath(int A,int B){
 		
 }
 
-void graph::Explore(node* current, node* destination){
-	if(current==destination){
-	//here, we'll have to check to see if we know
-	//mathematically that this has to be the minimum path,
-	//or if this is the last path in the heap.
-	//
-	//If it is the minimum or the last path, we'll take the minimum
-	//off the heap and use a while loop to follow the path backwards,
-	//in the meantime storing each node along this minimum
-	//path into our "path" variable as a pointer.
-	//Once it reaches the origin (which can be identified by a cost of 0),
-	//it will fall out of the while loop
-	//and the pointers in the "path" array will be reversed
-	//(since we added them in backwards order).
-	//(I'm still thinking about the best way to represent the final path)
-	}
-	else{
-		int newcost = current->cost;
-		//find edges for node
-		for(int i = 0; i < size; i++){
-			//check if this spot in the matrix is an existing edge
-			if(matrix[current->location][i] >= 0){
-				newcost+=matrix[current->location][i];//tentative new cost is current cost + weight of tentative edge
-				//if new cost is lower than the current cost to get to tentative location, or if current is -1 (which represents infinity)
-				if(newcost < nodes[i].cost || nodes[i].cost < 0)
-					Explore(&nodes[i],destination);//Here call Explore recursively on all items that have a smaller cost
-			}
-		}
-	}
-}
+
 
 void graph::InsertEdge(int from, int to, int weight){
 	if(from > 0 && from < size && to > 0 && to < size){
