@@ -17,7 +17,7 @@ class binheap {
 		binheap():heap(0),size(0),last(-1){};
 		binheap(int heap_size);
         void Insert(node* n);
-        void Remove(node* n);
+        node* Remove();
         node* Min()const;
         bool empty();
 };
