@@ -1,5 +1,8 @@
 #ifndef BINHEAP_H
 #define BINHEAP_H
+#include "node.h"
+
+
 
 class binheap {
     private:
