@@ -14,7 +14,6 @@ class graph{
 		node* nodes;//container for all nodes in graph
 		int** matrix;
 		binheap* heap;//choose a better name?
-		node ** path;//array that will store the path found; better ideas for this?
 		void Explore(node* current, node* destination);//Recursive function that actually looks at nodes and finds shortest path; called by ShortestPath
 	public:
 		graph():size(0){};
@@ -52,21 +51,19 @@ graph::graph(int graph_size){
 //input: indeces of nodes in matrix for begin and end point of desired path
 //output: for now, array of indeces could be set to object's "path" array for shortest path... maybe change to LinkedList?
 vector<int> graph::ShortestPath(int start,int end){
-	start->cost = 0;//Setting start cost to 0 because: (1.) logically makes sense (2.) will keep final cost from being off by one (3.) marks the origin conveniently
-	int eyeball = start;//Our eye starts at the start point of course
-	heap->Insert(eyeNode);
-	stack<int> path;//This is where we'll store the final path
+	nodes[start].cost = 0;//Setting start cost to 0 because: (1.) logically makes sense (2.) will keep final cost from being off by one (3.) marks the origin conveniently
+	node* eyeball = &nodes[start];//Our eye starts at the start point of course
+	heap->Insert(eyeball);
 	while(!heap->empty() && &(nodes[end]) != heap->Min()){//min method will take a node as a parameter and determine if that node is the root
 		
-		nodes[eyeball] = heap->Remove();//go to next item in the heap, and pop it off the heap    
-		eye = nodes[eyeball]->location;//this is the matrix location of our new node
+		eyeball = heap->Remove();//go to next item in the heap, and pop it off the heap    
 		for(int k=0; k < size; k++){//Iterate through the matrix to find any connections
 			
-			if(matrix[eye][k] != -1){//if there's a connection from the eye to the indexed node. Two if statements are for clarity
-				if(nodes[eyeball].cost + matrix[eyeball][k] < nodes[k].cost || nodes[k].cost == -1){//if the eye's distance from orgin + endgelength  less than what the node currently costs
+			if(matrix[eyeball->location][k] != -1){//if there's a connection from the eye to the indexed node. Two if statements are for clarity
+				if(nodes[eyeball->location].cost + matrix[eyeball->location][k] < nodes[k].cost || nodes[k].cost == -1){//if the eye's distance from orgin + endgelength  less than what the node currently costs
 					
-						nodes[k].cost = nodes[eyeball].cost + matrix[eyeball][k];//Change cost of eye node to new total cost
-						nodes[k].prev = nodes[eyeball];//So eye node will know who changed it
+						nodes[k].cost = nodes[eyeball->location].cost + matrix[eyeball->location][k];//Change cost of eye node to new total cost
+						nodes[k].prev = eyeball;//So eye node will know who changed it
 						heap->Insert(&nodes[k]);//Add this to our heap to become our eye at a later point
 				}
 			}
@@ -74,20 +71,21 @@ vector<int> graph::ShortestPath(int start,int end){
 	}
 	
 	int current = end;//Now we will trace path from end to beginning
+	stack<int> path;//This is where we'll store the final path
 	while(current != start){//when current is beginning
 		path.push(current);
 		current = nodes[current].prev->location;
 	}
 	
 	vector<int> returnPath;
+	returnPath.push_back(start);//Don't forget to get start node!
 	while(!path.empty()){
-		int currentNode = path.pop();
-		returnPath.push_back(currentNode);
-		cout<<endl<<currentNode.location;
+		current = path.top();//gets next element off the stack
+		path.pop();//removes the retrieved element from the stack
+		returnPath.push_back(current);
 	}
 	
 	return returnPath;
-		
 }
 
 
