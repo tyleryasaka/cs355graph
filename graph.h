@@ -14,7 +14,6 @@ class graph{
 		binheap* heap;//choose a better name?
 		void Copy(const graph& source);//Helper for copy constructor/assignment operator
 		void ClearPath();//Resets nodes' prev and cost but not location
-		void ClearMatrix();//Resets matrix
 	public:
 		graph():size(0){};
 		graph(int graph_size);
@@ -23,8 +22,8 @@ class graph{
 		~graph();
 		vector<int> ShortestPath(int A, int B);
 		void InsertEdge(int from, int to, int weight); //This also updates existing edges
-		void ClearEdge(int from, int to);
-		void ClearEdges();//Resets nodes' prev and cost and location, resets matrix
+		void ClearEdge(int from, int to);//removes a single matrix spot
+		void ClearEdges();//resets entire matrix
 };
 
 void graph::Copy(const graph& source){

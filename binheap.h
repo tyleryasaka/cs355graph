@@ -2,8 +2,6 @@
 #define BINHEAP_H
 #include "node.h"
 
-
-
 class binheap {
     private:
 		//the heap:
