@@ -65,7 +65,7 @@ void graph::ShortestPath(int A,int B){
 		}
 
 		eyeNode = *heap->Remove();              
-		eye = eyenode.location;
+		eye = eyeNode.location;
 	}
 
 
