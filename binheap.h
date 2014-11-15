@@ -73,7 +73,7 @@ void binheap::Insert(node* n){
 node* binheap::Remove(){
 	if(last>=0){
 		bool done = false;
-		node* out = heap[0];//pass node pointer to variable to be returned
+		node* outnode = heap[0];//pass node pointer to variable to be returned
 		heap[0] = heap[last];//Place last item at top of heap
 		heap[last] = 0;//Remove the last item from former location
 		last--;//Now last item is one lower in heap
@@ -108,6 +108,10 @@ node* binheap::Remove(){
 				done = true;
 		}
 	}
+	else {
+		outnode = 0;
+	}
+	return outnode;
 }
 
 //swaps nodes in heap at given indeces

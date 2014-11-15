@@ -18,13 +18,6 @@ class graph{
 		void InsertEdge(int from, int to, int weight); //This also updates existing edges
 };
 
-node node::operator=(const node &n){
-	cost = n.cost;
-	prev = n.prev;
-	location = n.location;
-	return *this;
-}
-
 //overloaded constructor
 graph::graph(int graph_size){
 	size = graph_size;
