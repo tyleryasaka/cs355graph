@@ -3,6 +3,9 @@ class binheap;
 #include "binheap.h"
 #include <stack>
 #include <iostream>
+#include <vector>
+
+
 using namespace std;
 
 class graph{
@@ -16,7 +19,7 @@ class graph{
 	public:
 		graph():size(0){};
 		graph(int graph_size);
-		stack<int> ShortestPath(int A, int B);
+		vector<int> ShortestPath(int A, int B);
 		void InsertEdge(int from, int to, int weight); //This also updates existing edges
 };
 /*
@@ -48,7 +51,7 @@ graph::graph(int graph_size){
 
 //input: indeces of nodes in matrix for begin and end point of desired path
 //output: for now, array of indeces could be set to object's "path" array for shortest path... maybe change to LinkedList?
-stack<int> graph::ShortestPath(int start,int end){
+vector<int> graph::ShortestPath(int start,int end){
 	start->cost = 0;//Setting start cost to 0 because: (1.) logically makes sense (2.) will keep final cost from being off by one (3.) marks the origin conveniently
 	int eyeball = start;//Our eye starts at the start point of course
 	heap->Insert(eyeNode);
@@ -76,8 +79,14 @@ stack<int> graph::ShortestPath(int start,int end){
 		current = nodes[current].prev->location;
 	}
 	
-	return path;//Replace this.
-
+	vector<int> returnPath;
+	while(!path.empty()){
+		int currentNode = path.pop();
+		returnPath.push_back(currentNode);
+		cout<<endl<<currentNode.location;
+	}
+	
+	return returnPath;
 		
 }
 
