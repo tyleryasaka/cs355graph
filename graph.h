@@ -4,7 +4,6 @@
 #include <iostream>
 #include <vector>
 
-
 using namespace std;
 
 class graph{
@@ -13,13 +12,37 @@ class graph{
 		node* nodes;//container for all nodes in graph
 		int** matrix;
 		binheap* heap;//choose a better name?
-		void Explore(node* current, node* destination);//Recursive function that actually looks at nodes and finds shortest path; called by ShortestPath
+		void Copy(const graph& source);//Helper for copy constructor/assignment operator
+		void ClearPath();//Resets nodes' prev and cost but not location
+		void ClearMatrix();//Resets matrix
 	public:
 		graph():size(0){};
 		graph(int graph_size);
+		graph(const graph& source);
+		graph& operator=(const graph& source);
+		~graph();
 		vector<int> ShortestPath(int A, int B);
 		void InsertEdge(int from, int to, int weight); //This also updates existing edges
+		void ClearEdge(int from, int to);
+		void ClearEdges();//Resets nodes' prev and cost and location, resets matrix
 };
+
+void graph::Copy(const graph& source){
+	size = source.size;
+	nodes = new node[size];
+	matrix = new int*[size];
+	heap = new binheap(size);
+	*nodes = *source.nodes;
+	*matrix = *source.matrix;
+	*heap = *source.heap;
+}
+
+void graph::ClearPath(){
+	for(int i=0;i<size;i++){
+		nodes[i].cost = -1;
+		nodes[i].prev = 0;
+	}
+}
 
 //overloaded constructor
 graph::graph(int graph_size){
@@ -37,6 +60,24 @@ graph::graph(int graph_size){
 			matrix[i][j] = -1;
 		}
 	}
+}
+
+graph::graph(const graph& source){
+	Copy(source);
+}
+
+graph& graph::operator=(const graph& source){
+	Copy(source);
+	return *this;
+}
+
+graph::~graph(){
+	delete nodes;
+	delete matrix;
+	delete heap;
+	nodes = 0;
+	matrix = 0;
+	heap = 0;
 }
 
 //input: indeces of nodes in matrix for begin and end point of desired path
@@ -75,6 +116,8 @@ vector<int> graph::ShortestPath(int start,int end){
 		path.pop();//removes the retrieved element from the stack
 		returnPath.push_back(current);
 	}
+	
+	ClearPath();//Clear the path made from the graph
 	
 	return returnPath;
 }

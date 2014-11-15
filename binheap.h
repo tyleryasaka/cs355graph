@@ -13,16 +13,40 @@ class binheap {
         int size;//size of heap
         int last;//index of last item in heap
         void SwapNode(int i, int j);
+        void Copy(const binheap& source);//Helper for copy constructor/assignment operator
     public:
 		binheap():heap(0),size(0),last(-1){};
 		binheap(int heap_size);
+		binheap(const binheap& source);
+		binheap& operator=(const binheap& source);
         void Insert(node* n);
         node* Remove();
         node* Min()const;
         bool empty();
 };
 
+//swaps nodes in heap at given indeces
+void binheap::SwapNode(int i, int j){
+	node* temp = heap[i];
+	heap[i] = heap [j];
+	heap[j] = temp;
+}
 
+void binheap::Copy(const binheap& source){
+	size = source.size;
+	last = source.last;
+	heap = new node*[size];
+	*heap = *source.heap;
+}
+
+binheap::binheap(const binheap& source){
+	Copy(source);
+}
+
+binheap& binheap::operator=(const binheap& source){
+	Copy(source);
+	return *this;
+}
 
 //overloaded constructor
 binheap::binheap(int heap_size){
@@ -110,13 +134,6 @@ node* binheap::Remove(){
 		}
 	}
 	return result;
-}
-
-//swaps nodes in heap at given indeces
-void binheap::SwapNode(int i, int j){
-	node* temp = heap[i];
-	heap[i] = heap [j];
-	heap[j] = temp;
 }
 
 //sees if heap is empty by where the last index is
