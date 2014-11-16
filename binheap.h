@@ -17,6 +17,7 @@ class binheap {
 		binheap(int heap_size);
 		binheap(const binheap& source);
 		binheap& operator=(const binheap& source);
+		~binheap();
         void Insert(node* n);
         node* Remove();
         node* Min()const;
@@ -34,7 +35,9 @@ void binheap::Copy(const binheap& source){
 	size = source.size;
 	last = source.last;
 	heap = new node*[size];
-	*heap = *source.heap;
+	for(int i=0;i<size;i++){
+		heap[i] = source.heap[i];
+	}
 }
 
 binheap::binheap(const binheap& source){
@@ -42,6 +45,7 @@ binheap::binheap(const binheap& source){
 }
 
 binheap& binheap::operator=(const binheap& source){
+	delete[] heap;
 	Copy(source);
 	return *this;
 }
@@ -57,6 +61,11 @@ binheap::binheap(int heap_size){
 		heap = new node*[size];
 	}
 	last = -1;
+}
+
+binheap::~binheap(){
+	delete[] heap;
+	heap = 0;
 }
 
 //returns item at top of heap

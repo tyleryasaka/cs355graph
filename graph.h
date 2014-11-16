@@ -1,10 +1,11 @@
+#ifndef GRAPH_H
+#define GRAPH_H
 #include "node.h"
-#include "binheap.h"
-#include <stack>
-#include <iostream>
-#include <vector>
+#include "path.h"
 
-using namespace std;
+//---------------------------------------------------------------------
+//Graph
+//---------------------------------------------------------------------
 
 class graph{
 	private:
@@ -20,7 +21,7 @@ class graph{
 		graph(const graph& source);
 		graph& operator=(const graph& source);
 		~graph();
-		vector<int> ShortestPath(int A, int B);
+		path ShortestPath(int A, int B);
 		void InsertEdge(int from, int to, int weight); //This also updates existing edges
 		void ClearEdge(int from, int to);//removes a single matrix spot
 		void ClearEdges();//resets entire matrix
@@ -30,9 +31,11 @@ void graph::Copy(const graph& source){
 	size = source.size;
 	nodes = new node[size];
 	matrix = new int*[size];
+	for(int i=0;i<size;i++){
+		nodes[i] = source.nodes[i];
+		matrix[i] = source.matrix[i];
+	}
 	heap = new binheap(size);
-	*nodes = *source.nodes;
-	*matrix = *source.matrix;
 	*heap = *source.heap;
 }
 
@@ -66,6 +69,9 @@ graph::graph(const graph& source){
 }
 
 graph& graph::operator=(const graph& source){
+	delete nodes;
+	delete matrix;
+	delete heap;
 	Copy(source);
 	return *this;
 }
@@ -81,7 +87,7 @@ graph::~graph(){
 
 //input: indeces of nodes in matrix for begin and end point of desired path
 //output: for now, array of indeces could be set to object's "path" array for shortest path... maybe change to LinkedList?
-vector<int> graph::ShortestPath(int start,int end){
+path graph::ShortestPath(int start,int end){
 	nodes[start].cost = 0;//Setting start cost to 0 because: (1.) logically makes sense (2.) will keep final cost from being off by one (3.) marks the origin conveniently
 	node* eyeball = &nodes[start];//Our eye starts at the start point of course
 	heap->Insert(eyeball);
@@ -102,18 +108,19 @@ vector<int> graph::ShortestPath(int start,int end){
 	}
 	
 	int current = end;//Now we will trace path from end to beginning
-	stack<int> path;//This is where we'll store the final path
+	int* backtrack = new int[size];//This is where we'll store the final path
+	int pathlen = 0;
 	while(current != start){//when current is beginning
-		path.push(current);
+		backtrack[pathlen] = current;
+		pathlen++;
 		current = nodes[current].prev->location;
 	}
+	backtrack[pathlen] = start;//Don't forget to include the first node!
+	pathlen++;
 	
-	vector<int> returnPath;
-	returnPath.push_back(start);//Don't forget to get start node!
-	while(!path.empty()){
-		current = path.top();//gets next element off the stack
-		path.pop();//removes the retrieved element from the stack
-		returnPath.push_back(current);
+	path returnPath(pathlen);
+	for(int i=0;i<pathlen;i++){
+		returnPath.location[i] = backtrack[(pathlen-i-1)];
 	}
 	
 	ClearPath();//Clear the path made from the graph
@@ -126,3 +133,5 @@ void graph::InsertEdge(int from, int to, int weight){
 		matrix[from][to] = weight;
 	}
 }
+
+#endif
