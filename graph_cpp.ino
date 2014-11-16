@@ -310,29 +310,75 @@ void graph::InsertEdge(int from, int to, int weight){
 	}
 }
 
-//-------------------------------------------------------------------------------
+//----------------------------------------------------------------------
 
-// constants won't change. Used here to 
-// set pin numbers:
-int lights[] = {11,8,4,9,5,2,10,6,7,3};
+const bool high = LOW;//Some reason my arduino is reversed.
+const bool low = HIGH;
+const int lights[] = {11,8,4,9,5,2,10,6,7,3};
+const int lightcount = 10;
+const int button1 = 1;
+const int button2 = 0;
+int A = -1;
+int B = -1;
 
-void setup() {
-  // set the digital pin as output:
-  for(int i;i<10;i++)
-    pinMode(lights[i], OUTPUT);
+//----------------------------------------------------------------------
+
+void On(int light){
+	digitalWrite(lights[light],high);
+}
+
+void Off(int light){
+	digitalWrite(lights[light],low);
+}
+
+bool Press(int button){
+	bool result = false;
+	while(digitalRead(button) == high){
+		result = true;
+	}
+	delay(100);
+	return result;
 }
 
 void ResetLights(){
-  for(int i;i<10;i++)
-    digitalWrite(lights[i],HIGH);   
+  for(int i=0;i<lightcount;i++)
+    Off(i);
 }
 
-void loop()
-{
+void BlinkAll(){
 	ResetLights();
-	
+	delay(100);
+	for(int i=0;i<lightcount;i++){
+		On(i);
+	}
+	delay(500);
+	ResetLights();
+	delay(500);
+}
+
+void LightPath(int* route, int length){
+	for(int i=0;i<length;i++){
+		On(route[i]);
+		delay(1000);
+	}
+}
+
+//----------------------------------------------------------------------
+
+void setup() {
+  // set the digital pin as output:
+	for(int i;i<lightcount;i++)
+		pinMode(lights[i], OUTPUT);
+	pinMode(button1, INPUT);
+	pinMode(button2, INPUT);
+	ResetLights();
+}
+
+//----------------------------------------------------------------------
+
+void loop()
+{	
 	graph map(10);
-	
 	map.InsertEdge(0,3,2);
 	map.InsertEdge(0,8,13);
 	map.InsertEdge(1,0,15);
@@ -341,6 +387,7 @@ void loop()
 	map.InsertEdge(3,1,40);
 	map.InsertEdge(3,6,8);
 	map.InsertEdge(4,3,3);
+	map.InsertEdge(4,9,10);
 	map.InsertEdge(5,2,1);
 	map.InsertEdge(5,9,6);
 	map.InsertEdge(6,8,2);
@@ -350,15 +397,43 @@ void loop()
 	map.InsertEdge(8,9,6);
 	map.InsertEdge(9,7,2);
 	
-	path route = map.ShortestPath(4,9);
+	BlinkAll();
 	
-	delay(1000);
+	A=0;
+	On(A);
 	
-	for(int i=0;i<route.length;i++){
-		digitalWrite(lights[route.location[i]],LOW);
-        delay(1000);
+	while(!Press(button2)){
+		if(Press(button1)){
+			Off(A);
+			A = (A+1) % lightcount;//increment but loop around
+			On(A);
+		}
 	}
-
-    delay(5000);
+	
+	BlinkAll();
+	
+	B = 0;
+	On(B);
+	
+	while(!Press(button2)){
+		if(Press(button1)){
+			Off(B);
+			B = (B+1) % lightcount;//increment but loop around
+			On(B);
+		}
+	}
+		
+	path route = map.ShortestPath(A,B);
+		
+	BlinkAll();
+		
+	LightPath(route.location,route.length);
+		
+	while(!Press(button2)){
+		if(Press(button1)) {
+			ResetLights();
+			delay(1000);
+			LightPath(route.location,route.length);
+		}
+	}
 }
-
