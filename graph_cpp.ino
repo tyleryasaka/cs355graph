@@ -381,7 +381,6 @@ void loop()
 	graph map(10);
 	map.InsertEdge(0,3,2);
 	map.InsertEdge(0,8,13);
-	map.InsertEdge(1,0,15);
 	map.InsertEdge(1,4,6);
 	map.InsertEdge(2,1,1);
 	map.InsertEdge(3,1,40);
