@@ -367,6 +367,23 @@ void BlinkAll(){
 	delay(500);
 }
 
+void BlinkCrazy(){
+	ResetLights();
+	for(int i=0;i<lightcount;i=i+2){
+		On(i);
+	}
+	delay(40);
+	ResetLights();
+	delay(40);
+	ResetLights();
+	for(int i=1;i<lightcount;i=i+2){
+		On(i);
+	}	
+	delay(40);
+	ResetLights();
+	delay(40);
+}
+
 void LightPath(int* route, int length){
 	for(int i=0;i<length;i++){
 		On(route[i]);
@@ -396,7 +413,7 @@ void loop()
 	map.InsertEdge(2,1,1);
 	map.InsertEdge(3,1,40);
 	map.InsertEdge(3,6,8);
-	map.InsertEdge(4,3,3);
+	map.InsertEdge(4,5,2);
 	map.InsertEdge(4,9,10);
 	map.InsertEdge(5,2,1);
 	map.InsertEdge(5,9,6);
@@ -434,16 +451,29 @@ void loop()
 	}
 		
 	path route = map.ShortestPath(A,B);
+	
+	if(route.length > 0){
 		
-	BlinkAll();
+		BlinkAll();
 		
-	LightPath(route.location,route.length);
+		LightPath(route.location,route.length);
 		
-	while(!Press(button2)){
-		if(Press(button1)) {
-			ResetLights();
-			delay(1000);
-			LightPath(route.location,route.length);
+		while(!Press(button2)){
+			if(Press(button1)) {
+				ResetLights();
+				delay(1000);
+				LightPath(route.location,route.length);
+			}
 		}
 	}
+	
+	else {
+	
+		while(!Press(button2)){
+			BlinkCrazy();
+		}
+		delay(200);
+	
+	}
+	
 }
