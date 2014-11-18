@@ -314,7 +314,7 @@ void graph::InsertEdge(int from, int to, int weight){
 
 const bool high = LOW;//Some reason my arduino is reversed.
 const bool low = HIGH;
-const int lights[] = {11,8,4,9,5,2,10,6,7,3};
+const int lights[] = {11,10,2,3,4,5,6,7,8,9};
 const int lightcount = 10;
 const int button1 = 1;
 const int button2 = 0;
