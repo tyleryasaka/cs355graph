@@ -108,19 +108,30 @@ path graph::ShortestPath(int start,int end){
 	}
 	
 	int current = end;//Now we will trace path from end to beginning
-	int* backtrack = new int[size];//This is where we'll store the final path
-	int pathlen = 0;
-	while(current != start){//when current is beginning
-		backtrack[pathlen] = current;
-		pathlen++;
-		current = nodes[current].prev->location;
-	}
-	backtrack[pathlen] = start;//Don't forget to include the first node!
-	pathlen++;
 	
-	path returnPath(pathlen);
-	for(int i=0;i<pathlen;i++){
-		returnPath.location[i] = backtrack[(pathlen-i-1)];
+	path returnPath;
+	
+	//make sure a path was actually found
+	if(nodes[current].prev!=0){
+		int* backtrack = new int[size];//This is where we'll store the final path
+		int pathlen = 0;
+		while(current != start){//when current is beginning
+			backtrack[pathlen] = current;
+			pathlen++;
+			current = nodes[current].prev->location;
+		}
+		backtrack[pathlen] = start;//Don't forget to include the first node!
+		pathlen++;
+	
+		path successPath(pathlen);
+		returnPath = successPath;
+		for(int i=0;i<pathlen;i++){
+			returnPath.location[i] = backtrack[(pathlen-i-1)];
+		}
+	}
+	else{
+		path failPath(0);
+		returnPath = failPath;
 	}
 	
 	ClearPath();//Clear the path made from the graph
