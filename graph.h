@@ -32,7 +32,9 @@ void graph::Copy(const graph& source){
 	nodes = new node[size];
 	matrix = new int*[size];
 	for(int i=0;i<size;i++){
-		nodes[i] = source.nodes[i]; 
+		nodes[i].cost = -1;           
+		nodes[i].prev = 0;
+		nodes[i].location = i;
 		matrix[i] = source.matrix[i];
 	}
 	heap = new binheap(size);
