@@ -140,7 +140,7 @@ path graph::ShortestPath(int start,int end){
 }
 
 void graph::InsertEdge(int from, int to, int weight){
-	if(from >= 0 && from < size && to >= 0 && to < size && weight >= 0){
+	if(from >= 0 && from < size && to >= 0 && to < size && weight > 0){
 		matrix[from][to] = weight;
 	}
 }
