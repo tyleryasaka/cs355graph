@@ -1,8 +1,9 @@
 #include <iostream>
-
+#include "map.h"
 
 int main() {
-
-
-	return 0;
+	
+	map parkourMap(10, 10);
+	parkourMap.printMap();
 }
+

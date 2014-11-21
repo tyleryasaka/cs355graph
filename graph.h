@@ -2,6 +2,7 @@
 #define GRAPH_H
 #include "node.h"
 #include "path.h"
+#include "binheap.h"
 
 //---------------------------------------------------------------------
 //Graph
@@ -25,6 +26,8 @@ class graph{
 		void InsertEdge(int from, int to, int weight); //This also updates existing edges
 		void ClearEdge(int from, int to);//removes a single matrix spot
 		void ClearEdges();//resets entire matrix
+		
+		node * NodeAccessor(int location);
 };
 
 void graph::Copy(const graph& source){
@@ -145,6 +148,10 @@ void graph::InsertEdge(int from, int to, int weight){
 	if(from >= 0 && from < size && to >= 0 && to < size && (weight > 0 || weight == -1)){ //zero is not allowed as a weight 
 		matrix[from][to] = weight;
 	}
+}
+
+node * graph::NodeAccessor(int location) {
+	return &nodes[location];
 }
 
 #endif
