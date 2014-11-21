@@ -6,6 +6,8 @@ struct node{
     node* prev;//previous node in tentative path
     int location;//index of this node on matrix
     
+    int x;
+    int y;
     char symbol;
 };
 
