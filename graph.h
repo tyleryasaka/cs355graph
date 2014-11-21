@@ -10,12 +10,14 @@
 
 class graph{
 	private:
-		int size;   //nodes in graph
 		node* nodes;//container for all nodes in graph
-		int** matrix;
 		binheap* heap;//choose a better name?
 		void Copy(const graph& source);//Helper for copy constructor/assignment operator
 		void ClearPath();//Resets nodes' prev and cost but not location
+	protected:
+		int** matrix;
+		int size;   //nodes in graph
+		node * NodeAccessor(int location);
 	public:
 		graph():size(0){};
 		graph(int graph_size);
@@ -26,8 +28,6 @@ class graph{
 		void InsertEdge(int from, int to, int weight); //This also updates existing edges
 		void ClearEdge(int from, int to);//removes a single matrix spot
 		void ClearEdges();//resets entire matrix
-		
-		node * NodeAccessor(int location);
 };
 
 void graph::Copy(const graph& source){

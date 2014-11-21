@@ -6,9 +6,11 @@ struct node{
     node* prev;//previous node in tentative path
     int location;//index of this node on matrix
     
-    int x;
-    int y;
-    char symbol;
+    //x & y are used for integration with the path class
+    int x; //Allows node to refer back to a grid location on the map
+    int y; //Allows node to refer back to a grid location on the map
+    
+	char symbol; //Symbols are customizable for mapping
 };
 
 #endif 
