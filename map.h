@@ -13,6 +13,7 @@ class map : public graph{
 		
 		//Accessors
 		void printMap();
+		void changeSymbol(int xVal, int yVal, char newSymbol);
 		
 	private:
 		int width;
@@ -34,9 +35,11 @@ map::map(int mapWidth, int mapHeight) : graph(mapWidth * mapHeight) {
 	for (int w = 0; w < width; w++) {
 		for (int h = 0; h < height; h++) {
 			nodeMap[w][h] = NodeAccessor(nodeIndex++);
-			nodeMap[w][h]->symbol = '0';
-			nodeMap[w][h]->x = w;
-			nodeMap[w][h]->y = h;
+			if ((w == 0 || h ==  0) || (w == width - 1 || h == height - 1)) {
+				nodeMap[w][h]->symbol = '#';
+			}
+			else 
+				nodeMap[w][h]->symbol = 0;
 		}
 	}
 }
@@ -48,6 +51,10 @@ void map::printMap() {
 		}
 		std::cout << std::endl;
 	}
+}
+
+void map::changeSymbol(int xVal, int yVal, char newSymbol) {
+	nodeMap[xVal][yVal]->symbol = newSymbol;
 }
 
 

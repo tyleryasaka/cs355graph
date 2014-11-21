@@ -3,7 +3,8 @@
 
 int main() {
 	
-	map parkourMap(10, 10);
+	map parkourMap(30, 30);
+	parkourMap.changeSymbol(5, 5, 'H');
 	parkourMap.printMap();
 }
 
