@@ -74,7 +74,8 @@ map::map() : width(0), height(0) {}
 // Function: Overloaded Constructor
 // Parameters: (N/A)
 // Description: 
-// TODO:
+// TODO: Segfaults when building a map of non-proportional size. Length and width must be the same
+//		 or else there will be segfaults. This needs to be fixed.
 //=================================================================================================
 map::map(int mapWidth, int mapHeight) : graph(mapWidth * mapHeight) {
 	width = mapWidth;
@@ -91,35 +92,35 @@ map::map(int mapWidth, int mapHeight) : graph(mapWidth * mapHeight) {
 			nodeMap[w][h]->x = w;
 			nodeMap[w][h]->y = h;
 			nodeIndex++;
-			nodeMap[w][h]->symbol = '^'; //Default starting symbol - Feel free to change
+			nodeMap[w][h]->symbol = ' '; //Default starting symbol - Feel free to change
 		}
 	}
 	//Generating edges to connect all grids together
 	//Grids are connected to their left, right, and above grids
-	for (int h = height - 1; h >= 0; h--) {
+	for (int h = 0; h < height; h++) {
 		for (int w = width - 1; w >= 0; w--) {
-			if ((w + 1 == width) && (h != 0)) { //1: Right edge and not bordering the top
+			if ((w + 1 == width) && (h + 1 != height)) { //1: Right edge and not bordering the top
 				InsertEdge(w, h, w - 1, h, 1); //Connect to left node
-				InsertEdge(w, h, w, h - 1, 1); // Connect to above node
+				InsertEdge(w, h, w, h + 1, 1); // Connect to above node
 			}
-			else if ((w + 1 == width) && (h == 0)) { //2: Right edge and bordering the top
+			else if ((w + 1 == width) && (h + 1 == height)) { //2: Right edge and bordering the top
 				InsertEdge(w, h, w - 1, h, 1); //Connect to left node
 			}
-			else if ((w == 0) && (h != 0)) { //3: Left edge and not bordering the top
+			else if ((w == 0) && (h + 1 != height)) { //3: Left edge and not bordering the top
 				InsertEdge(w, h, w + 1, h, 1); //Connect to right node
-				InsertEdge(w, h, w, h - 1, 1); // Connect to above node
+				InsertEdge(w, h, w, h + 1, 1); // Connect to above node
 			}
-			else if ((w == 0) && (h == 0)) { //4: Left edge and bordering the top
+			else if ((w == 0) && (h + 1 == height)) { //4: Left edge and bordering the top
 				InsertEdge(w, h, w + 1, h, 1); //Connect to right node
 			}
-			else if (h == 0) { //5: Bordering the top
+			else if (h + 1 == height) { //5: Bordering the top
 				InsertEdge(w, h, w - 1, h, 1); //Connect to left node
 				InsertEdge(w, h, w + 1, h, 1); //Connect to right node
 			}
 			else { //6: Not bordering the left, right, or top
 				InsertEdge(w, h, w - 1, h, 1); //Connect to left node
 				InsertEdge(w, h, w + 1, h, 1); //Connect to right node
-				InsertEdge(w, h, w, h - 1, 1); // Connect to above node								
+				InsertEdge(w, h, w, h + 1, 1); // Connect to above node							
 			}
 		}
 	}
@@ -181,19 +182,29 @@ void map::InsertEdge(int originX, int originY, int destX, int destY, int weight)
 // Function: findPath
 // Parameters: (int originX, int originY, int destX, destY)
 // Description:
-// TODO: Path is printing sideways, I swapped the x and y values but this is a quick patch fix.
-//			Needs to be corrected.
+// TODO: None
 //=================================================================================================
 void map::findPath(int originX, int originY, int destX, int destY) {
-	path route = this->ShortestPath(nodeMap[originX][originY]->location,
+	path route = ShortestPath(nodeMap[originX][originY]->location,
 	                                nodeMap[destX][destY]->location);
+	std::cout << "NOTE: Press ENTER to move the traceur" << std::endl << std::endl;
+	printMap();
+	std::cin.ignore();
 	std::cout << std::endl;
 	for (int i = 0; i < route.length; i++) {
-		changeSymbol(NodeAccessor(route.location[i])->y,
-					 NodeAccessor(route.location[i])->x,
+		changeSymbol(NodeAccessor(route.location[i])->x,
+					 NodeAccessor(route.location[i])->y,
 					 'T' //Default traceur symbol - Feel free to change
 					 );
+		if (i > 0) {
+			changeSymbol(NodeAccessor(route.location[i - 1])->x,
+						 NodeAccessor(route.location[i - 1])->y,
+					     '*' //Default traceur symbol - Feel free to change
+					    );
+		}
 		printMap();
+		std::cout << std::endl;
+		std::cin.ignore(); 
 	}
 }
 //=================================================================================================
