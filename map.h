@@ -30,8 +30,9 @@
 //				More interesting maps could be built with a setup like this,
 //				but I currently do not have time to implement.
 //
-// TODO: 1. Build a destructor
-//		 2. Build more accessors as needed
+// TODO: 1. Segfaults when initializing a map where length and width are not equivalent 
+//	 2. Build a destructor
+//	 3. Build more accessors as needed
 //=============================================================================
 class map : public graph{
 	public:
