@@ -1,5 +1,6 @@
 #ifndef BINHEAP_H
 #define BINHEAP_H
+#include "node.h"
 
 class binheap {
     private:
@@ -10,13 +11,44 @@ class binheap {
         int size;//size of heap
         int last;//index of last item in heap
         void SwapNode(int i, int j);
+        void Copy(const binheap& source);//Helper for copy constructor/assignment operator
     public:
 		binheap():heap(0),size(0),last(-1){};
 		binheap(int heap_size);
+		binheap(const binheap& source);
+		binheap& operator=(const binheap& source);
+		~binheap();
         void Insert(node* n);
-        void Remove(node* n);
+        node* Remove();
         node* Min()const;
+        bool empty();
 };
+
+//swaps nodes in heap at given indeces
+void binheap::SwapNode(int i, int j){
+	node* temp = heap[i];
+	heap[i] = heap [j];
+	heap[j] = temp;
+}
+
+void binheap::Copy(const binheap& source){
+	size = source.size;
+	last = source.last;
+	heap = new node*[size];
+	for(int i=0;i<size;i++){
+		heap[i] = source.heap[i];
+	}
+}
+
+binheap::binheap(const binheap& source){
+	Copy(source);
+}
+
+binheap& binheap::operator=(const binheap& source){
+	delete[] heap;
+	Copy(source);
+	return *this;
+}
 
 //overloaded constructor
 binheap::binheap(int heap_size){
@@ -29,6 +61,11 @@ binheap::binheap(int heap_size){
 		heap = new node*[size];
 	}
 	last = -1;
+}
+
+binheap::~binheap(){
+	delete[] heap;
+	heap = 0;
 }
 
 //returns item at top of heap
@@ -64,11 +101,51 @@ void binheap::Insert(node* n){
 	}
 }
 
-//swaps nodes in heap at given indeces
-void binheap::SwapNode(int i, int j){
-	node* temp = heap[i];
-	heap[i] = heap [j];
-	heap[j] = temp;
+node* binheap::Remove(){
+	node* result = 0;
+	if(last>=0){
+		bool done = false;
+		result = heap[0];//pass node pointer to variable to be returned
+		heap[0] = heap[last];//Place last item at top of heap
+		heap[last] = 0;//Remove the last item from former location
+		last--;//Now last item is one lower in heap
+		int current = 0;//keeps track of the location of node we are moving
+		int left = 0;//var for left child
+		int right = 0;//var for right child
+		int minchild = 0;//temp variable for comparing children
+		while(!done){
+			left = current*2+1;
+			right = current*2+2;
+			if(left <= last){//if it has a left child
+				if(right <= last){//if it has a right child
+					if(heap[left]->cost < heap[right]->cost)//find which child is smaller
+						minchild = left;
+					else
+						minchild = right;
+					if(heap[minchild]->cost < heap[current]->cost){//compare current with smallest child
+						SwapNode(current,minchild);
+						current = minchild;
+					}
+					else//if smaller child is not smaller than current, we're done
+						done = true;
+				}
+				else if(heap[left]->cost < heap[current]->cost){//if left less than current, swap
+					SwapNode(current, left);
+					current = left;//our current node is now where left was
+				}
+				else
+					done = true;//if left but no right and left not less than current, we're done
+			}
+			else//if no left child, can't have right child, so we're done
+				done = true;
+		}
+	}
+	return result;
+}
+
+//sees if heap is empty by where the last index is
+bool binheap::empty(){
+	return (last == -1);
 }
 
 #endif
