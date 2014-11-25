@@ -2,6 +2,7 @@
 #define GRAPH_H
 #include "node.h"
 #include "path.h"
+#include "binheap.h"
 
 //---------------------------------------------------------------------
 //Graph
@@ -9,12 +10,14 @@
 
 class graph{
 	private:
-		int size;   //nodes in graph
 		node* nodes;//container for all nodes in graph
-		int** matrix;
 		binheap* heap;//choose a better name?
 		void Copy(const graph& source);//Helper for copy constructor/assignment operator
 		void ClearPath();//Resets nodes' prev and cost but not location
+	protected:
+		int** matrix;
+		int size;   //nodes in graph
+		node * NodeAccessor(int location);
 	public:
 		graph():size(0){};
 		graph(int graph_size);
@@ -145,6 +148,10 @@ void graph::InsertEdge(int from, int to, int weight){
 	if(from >= 0 && from < size && to >= 0 && to < size && (weight > 0 || weight == -1)){ //zero is not allowed as a weight 
 		matrix[from][to] = weight;
 	}
+}
+
+node * graph::NodeAccessor(int location) {
+	return &nodes[location];
 }
 
 #endif

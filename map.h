@@ -52,6 +52,7 @@ class map : public graph{
 		node ***nodeMap;
 		int width;
 		int height;
+		char** symbol;
 };
 //=================================================================================================
 
@@ -83,46 +84,32 @@ map::map(int mapWidth, int mapHeight) : graph(mapWidth * mapHeight) {
 	height = mapHeight;
 	
 	nodeMap = new node**[width];
-	for (int i = 0; i < height; i ++)
+	symbol = new char*[width];
+	for (int i = 0; i < height; i ++){
 		nodeMap[i] = new node*[height];	
+		symbol[i] = new char[height];
+	}
 	int nodeIndex = 0;
 	for (int w = 0; w < width; w++) {
 		for (int h = 0; h < height; h++) {
 			nodeMap[w][h] = NodeAccessor(nodeIndex);
 			nodeMap[w][h]->location = nodeIndex;
-			nodeMap[w][h]->x = w;
-			nodeMap[w][h]->y = h;
 			nodeIndex++;
-			nodeMap[w][h]->symbol = ' '; //Default starting symbol - Feel free to change
+			symbol[w][h] = ' '; //Default starting symbol - Feel free to change
 		}
 	}
 	//Generating edges to connect all grids together
 	//Grids are connected to their left, right, and above grids
 	for (int h = 0; h < height; h++) {
 		for (int w = width - 1; w >= 0; w--) {
-			if ((w + 1 == width) && (h + 1 != height)) { //1: Right edge and not bordering the top
-				InsertEdge(w, h, w - 1, h, 1); //Connect to left node
-				InsertEdge(w, h, w, h + 1, 1); // Connect to above node
-			}
-			else if ((w + 1 == width) && (h + 1 == height)) { //2: Right edge and bordering the top
-				InsertEdge(w, h, w - 1, h, 1); //Connect to left node
-			}
-			else if ((w == 0) && (h + 1 != height)) { //3: Left edge and not bordering the top
-				InsertEdge(w, h, w + 1, h, 1); //Connect to right node
-				InsertEdge(w, h, w, h + 1, 1); // Connect to above node
-			}
-			else if ((w == 0) && (h + 1 == height)) { //4: Left edge and bordering the top
-				InsertEdge(w, h, w + 1, h, 1); //Connect to right node
-			}
-			else if (h + 1 == height) { //5: Bordering the top
-				InsertEdge(w, h, w - 1, h, 1); //Connect to left node
-				InsertEdge(w, h, w + 1, h, 1); //Connect to right node
-			}
-			else { //6: Not bordering the left, right, or top
-				InsertEdge(w, h, w - 1, h, 1); //Connect to left node
-				InsertEdge(w, h, w + 1, h, 1); //Connect to right node
-				InsertEdge(w, h, w, h + 1, 1); // Connect to above node							
-			}
+			if(w+1 < width)
+				InsertEdge(w, h, w+1, h, 1);//Connect to right node
+			if(w-1 >= 0)
+				InsertEdge(w, h, w-1, h, 1);//Connect to left node
+			if(h+1 < height)
+				InsertEdge(w, h, w, h+1, 1);//Connect to above node
+			if(h-1 >= 0)
+				InsertEdge(w, h, w, h-1, 1);//Connect to below node
 		}
 	}
 }
@@ -147,7 +134,7 @@ map::map(int mapWidth, int mapHeight) : graph(mapWidth * mapHeight) {
 void map::printMap() const {
 	for (int h = height - 1; h >= 0; h--) {
 		for (int w = 0; w < width; w++) {
-			std::cout << nodeMap[w][h]->symbol;
+			std::cout << symbol[w][h];
 		}
 		std::cout << std::endl;
 	}
@@ -193,13 +180,13 @@ void map::findPath(int originX, int originY, int destX, int destY) {
 	std::cin.ignore();
 	std::cout << std::endl;
 	for (int i = 0; i < route.length; i++) {
-		changeSymbol(NodeAccessor(route.location[i])->x,
-					 NodeAccessor(route.location[i])->y,
+		changeSymbol(NodeAccessor(route.location[i])->location/height,
+					 NodeAccessor(route.location[i])->location%width,
 					 'T' //Default traceur symbol - Feel free to change
 					 );
 		if (i > 0) {
-			changeSymbol(NodeAccessor(route.location[i - 1])->x,
-						 NodeAccessor(route.location[i - 1])->y,
+			changeSymbol(NodeAccessor(route.location[i - 1])->location/height,
+						 NodeAccessor(route.location[i - 1])->location%width,
 					     '*' //Default traceur symbol - Feel free to change
 					    );
 		}
@@ -221,7 +208,7 @@ void map::findPath(int originX, int originY, int destX, int destY) {
 // TODO: None
 //=================================================================================================
 void map::changeSymbol(int xVal, int yVal, char newSymbol) {
-	nodeMap[xVal][yVal]->symbol = newSymbol;
+	symbol[xVal][yVal] = newSymbol;
 }
 //=================================================================================================
 
