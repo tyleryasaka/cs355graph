@@ -1,3 +1,9 @@
+//----------------------------------------------------------------------
+//Command prompt application that uses our back-end algorithm.
+//
+//by Victor Rogers, Martin Tuck, & Tyler Yasaka
+//----------------------------------------------------------------------
+
 #include <iostream>
 #include "map.h"
 

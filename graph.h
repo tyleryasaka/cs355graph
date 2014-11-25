@@ -1,3 +1,9 @@
+//----------------------------------------------------------------------
+//Graph Class
+//
+//by Victor Rogers, Martin Tuck, & Tyler Yasaka
+//----------------------------------------------------------------------
+
 #ifndef GRAPH_H
 #define GRAPH_H
 #include "node.h"

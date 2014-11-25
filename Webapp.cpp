@@ -1,3 +1,9 @@
+//----------------------------------------------------------------------
+//This is our HTMl web page implementation of our back-end algorithm.
+//
+//by Victor Rogers, Martin Tuck, & Tyler Yasaka
+//----------------------------------------------------------------------
+
 #include <iostream>
 #include <sstream>
 #include <fstream>

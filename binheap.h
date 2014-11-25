@@ -1,3 +1,9 @@
+//----------------------------------------------------------------------
+//Binary Heap Class
+//by Victor Rogers, Martin Tuck, & Tyler Yasaka
+//
+//----------------------------------------------------------------------
+
 #ifndef BINHEAP_H
 #define BINHEAP_H
 #include "node.h"

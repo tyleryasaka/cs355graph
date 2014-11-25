@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+//Map class which inherits from Graph class for command prompt
+//implementation.
+//
+//by Victor Rogers, Martin Tuck, & Tyler Yasaka
+//----------------------------------------------------------------------
+
 #ifndef map_h
 #define map_h
 #include "graph.h"

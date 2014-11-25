@@ -1,3 +1,9 @@
+//----------------------------------------------------------------------
+//Path struct for returning final path for use in front-end applications
+//
+//by Victor Rogers, Martin Tuck, & Tyler Yasaka
+//----------------------------------------------------------------------
+
 #ifndef PATH_H
 #define PATH_H
 
