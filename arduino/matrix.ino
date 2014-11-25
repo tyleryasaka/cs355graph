@@ -1,5 +1,21 @@
 #include <Adafruit_GFX.h>   // Core graphics library
 #include <RGBmatrixPanel.h> // Hardware-specific library
+#include <Keypad.h>
+
+const byte ROWS = 4; 
+const byte COLS = 4; 
+char keys[ROWS][COLS] = {
+  {'1','2','3','A'},
+  {'4','5','6','B'},
+  {'7','8','9','C'},
+  {'*','0','#','D'}
+};
+byte rowPins[ROWS] = {35,37,39,41}; //connect to row pinouts 
+byte colPins[COLS] = {43,45,47,49}; //connect to column pinouts
+
+Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
+
+char key=NO_KEY;
 
 // If your 32x32 matrix has the SINGLE HEADER input,
 // use this pinout:
@@ -33,36 +49,36 @@ const uint16_t blank = matrix.Color333(0,0,0);//
 const uint16_t start_c = matrix.Color333(5,7,0);
 const uint16_t end_c = matrix.Color333(5,0,0);
 
-const char button1 = 0;
-
 const unsigned char building_w = 20;
 const unsigned char fence_w = 5;
 const unsigned char water_w = 100;
 
 const unsigned short int pause = 50;
 	
-const unsigned short int current_mapsize = 16;
-const unsigned short int current_mapsquare = current_mapsize*current_mapsize;
+const unsigned short int mapsize = 16;
+const unsigned short int mapsquare = mapsize*mapsize;
 
-unsigned char weight[current_mapsquare];
-unsigned char cost[current_mapsquare];
-bool prev1[current_mapsquare];
-bool prev2[current_mapsquare];
-bool queue[current_mapsquare];
-bool current_map = 0;
+unsigned char weight[mapsquare];
+unsigned char cost[mapsquare];
+bool prev1[mapsquare];
+bool prev2[mapsquare];
+bool queue[mapsquare];
+char current_map = 0;
 unsigned char start;
 unsigned char end;
 
+const unsigned char mapcount =3;
+
 unsigned short int coord(unsigned short int x, unsigned short int y){
-	return x*current_mapsize+y;
+	return x*mapsize+y;
 }
 
 unsigned short int getX(unsigned short int crd){
-	return crd/current_mapsize;
+	return crd/mapsize;
 }
 
 unsigned short int getY(unsigned short int crd){
-	return crd%current_mapsize;
+	return crd%mapsize;
 }
 
 void draw4(unsigned short int x, unsigned short int y, uint16_t color){
@@ -70,12 +86,6 @@ void draw4(unsigned short int x, unsigned short int y, uint16_t color){
 	matrix.drawPixel(2*x+1,2*y,color);
 	matrix.drawPixel(2*x,2*y+1,color);
 	matrix.drawPixel(2*x+1,2*y+1,color);
-}
-
-void resetcurrent_map(){
-	for(unsigned short int i=0;i<current_mapsquare;i++){
-		draw4(getX(i),getY(i),blank);
-	}
 }
 
 bool Press(char button){
@@ -87,21 +97,26 @@ bool Press(char button){
 	return result;
 }
 
+void resetWeights(){
+	for(unsigned short int i=0;i<mapsquare;i++){
+		weight[i]=1;
+	}
+}
+
 void setup() {
 	matrix.begin();
-	pinMode(button1, INPUT);
+	//Serial.begin(9600);
+	//pinMode(button1, INPUT);
 }
 
 void loop() {
-
-	while(!Press(button1)){
-	}
+	unsigned char w;
 	
 	//initialize vars
-	for(unsigned short int x=0;x<current_mapsize;x++){
-		for(unsigned short int y=0;y<current_mapsize;y++){
+	for(unsigned short int x=0;x<mapsize;x++){
+		for(unsigned short int y=0;y<mapsize;y++){
 			weight[coord(x,y)] = 1;
-			cost[coord(x,y)] = current_mapsquare-1;//represents infinity
+			cost[coord(x,y)] = mapsquare-1;//represents infinity
 			//previous[coord(x,y)] = 0;
 			prev1[coord(x,y)] = 0;
 			prev2[coord(x,y)] = 0;
@@ -109,6 +124,25 @@ void loop() {
 		}
 	}
 	
+	//------------------------------------------------------------------
+	
+	key = NO_KEY;
+	while(key != '*'){
+	key = keypad.getKey();
+	
+	if(key=='6'){
+		current_map=(current_map+1)%mapcount;
+		matrix.fillScreen(blank);
+		resetWeights();
+	}
+	if(key=='4'){
+		if(current_map==0)
+			current_map=mapcount-1;
+		else
+			current_map--;
+		matrix.fillScreen(blank);
+		resetWeights();
+	}
 	//------------------------------------------------------------------
 	//current_map 1
 	if(current_map==0){
@@ -161,9 +195,67 @@ void loop() {
 		weight[coord(13,12)] = water_w;
 	}
 	//------------------------------------------------------------------
-	//------------------------------------------------------------------
-	//current_map 2
+	//map 2
 	else if(current_map==1){
+		//water
+		for(unsigned short int i=9;i<=10;i++){
+			weight[coord(i,12)] = water_w;
+			weight[coord(i,13)] = water_w;
+			weight[coord(i,14)] = water_w;
+			weight[coord(i,15)] = water_w;
+		}
+		for(unsigned short int i=11;i<=12;i++){
+			weight[coord(i,12)] = water_w;
+		}
+		for(unsigned short int i=13;i<=14;i++){
+			weight[coord(i,12)] = water_w;
+			weight[coord(i,13)] = water_w;
+			weight[coord(i,14)] = water_w;
+		}
+		for(unsigned short int i=9;i<=10;i++){
+			weight[coord(14,i)] = water_w;
+		}
+		for(unsigned short int i=2;i<=4;i++){
+			weight[coord(13,i)] = water_w;
+		}
+		for(unsigned short int i=6;i<=7;i++){
+			weight[coord(i,1)] = water_w;
+		}
+		weight[coord(15,10)] = water_w;
+		weight[coord(4,13)] = water_w;
+		weight[coord(1,0)] = water_w;
+		weight[coord(2,3)] = water_w;
+		weight[coord(1,4)] = water_w;
+		//fence
+		for(unsigned short int i=3;i<=11;i++){
+			weight[coord(i,3)] = fence_w;
+			weight[coord(i,11)] = fence_w;
+		}
+		for(unsigned short int i=4;i<=10;i++){
+			weight[coord(3,i)] = fence_w;
+		}
+		for(unsigned short int i=4;i<=6;i++){
+			weight[coord(11,i)] = fence_w;
+			weight[coord(11,i+4)] = fence_w;
+		}
+		//Buildings
+		for(unsigned short int i=6;i<=8;i++){
+			weight[coord(i,5)] = building_w;
+			weight[coord(i,6)] = building_w;
+		}
+		for(unsigned short int i=5;i<=6;i++){
+			weight[coord(i,8)] = building_w;
+			weight[coord(i,9)] = building_w;
+		}
+		for(unsigned short int i=8;i<=9;i++){
+			weight[coord(i,8)] = building_w;
+			weight[coord(i,9)] = building_w;
+		}
+	}
+	
+	//------------------------------------------------------------------
+	//current_map 3
+	else if(current_map==2){
 		start = coord(15,0);
 		end = coord(3,3);
 		
@@ -251,15 +343,10 @@ void loop() {
 		weight[coord(13,13)] = water_w;
 		weight[coord(14,14)] = water_w;
 	}
-	//------------------------------------------------------------------
-	//------------------------------------------------------------------
-	draw4(getX(start),getY(start),start_c);
-	draw4(getX(end),getY(end),end_c);
-
-	unsigned char w;
+	
 	//Print obstacles
-	for(unsigned short int i=0;i<current_mapsize;i++){
-		for(unsigned short int j=0;j<current_mapsize;j++){
+	for(unsigned short int i=0;i<mapsize;i++){
+		for(unsigned short int j=0;j<mapsize;j++){
 			w = weight[coord(i,j)];
 			if(w==building_w)
 				draw4(i,j,building);
@@ -269,9 +356,87 @@ void loop() {
 				draw4(i,j,water);
 		}
 	}
-	
-	while(!Press(button1)){
 	}
+	
+	draw4(getX(start),getY(start),start_c);
+	draw4(getX(end),getY(end),end_c);
+	//------------------------------------------------------------------
+	
+	key = NO_KEY;
+	while(key != '*'){
+		key = keypad.getKey();
+		
+		w = weight[start];
+		if(w==building_w)
+			draw4(getX(start),getY(start),building);
+		else if(w==fence_w)
+			draw4(getX(start),getY(start),fence);
+		else if(w==water_w)
+			draw4(getX(start),getY(start),water);
+		else
+			draw4(getX(start),getY(start),blank);
+				
+		if(key=='2'){
+			if(start%mapsize==0)
+				start+=mapsize-1;
+			else
+				start--;
+		}
+		else if(key=='6')
+			start=(start+mapsize)%mapsquare;
+		else if(key=='4'){
+			if(start/mapsize==0)
+				start=mapsquare-mapsize+start;
+			else
+				start-=mapsize;
+		}
+		else if(key=='8'){
+			if(start%mapsize==mapsize-1)
+				start=start-mapsize+1;
+			else
+				start++;
+		}
+		draw4(getX(start),getY(start),start_c);
+	}
+	
+	key = NO_KEY;
+	while(key != '*'){
+		if(key!=NO_KEY) Serial.println(key);
+		key = keypad.getKey();
+		
+		w = weight[end];
+		if(w==building_w)
+			draw4(getX(end),getY(end),building);
+		else if(w==fence_w)
+			draw4(getX(end),getY(end),fence);
+		else if(w==water_w)
+			draw4(getX(end),getY(end),water);
+		else
+			draw4(getX(end),getY(end),blank);
+				
+		if(key=='2'){
+			if(end%mapsize==0)
+				end+=mapsize-1;
+			else
+				end--;
+		}
+		else if(key=='6')
+			end=(end+mapsize)%mapsquare;
+		else if(key=='4'){
+			if(end/mapsize==0)
+				end=mapsquare-mapsize+end;
+			else
+				end-=mapsize;
+		}
+		else if(key=='8'){
+			if(end%mapsize==mapsize-1)
+				end=end-mapsize+1;
+			else
+				end++;
+		}
+		draw4(getX(end),getY(end),end_c);
+	}
+	//------------------------------------------------------------------
 	
 	bool more = true;
 	bool found = false;
@@ -290,8 +455,8 @@ void loop() {
 			found = true;
 		}
 		
-		neighbor = eyeball+current_mapsize;//check forward
-		if(neighbor < current_mapsquare){
+		neighbor = eyeball+mapsize;//check forward
+		if(neighbor < mapsquare){
 			if((cost[eyeball]+weight[neighbor]) < cost[neighbor]){
 				queue[neighbor] = 1;
 				cost[neighbor] = cost[eyeball] + weight[neighbor];
@@ -302,7 +467,7 @@ void loop() {
 		}
 		
 		neighbor = eyeball+1;//check right
-		if(neighbor/current_mapsize == eyeball/current_mapsize){
+		if(neighbor/mapsize == eyeball/mapsize){
 			if((cost[eyeball]+weight[neighbor]) < cost[neighbor]){
 				queue[neighbor] = 1;
 				cost[neighbor] = cost[eyeball] + weight[neighbor];
@@ -313,7 +478,7 @@ void loop() {
 		}
 		
 		neighbor = eyeball-1;//check left
-		if((neighbor/current_mapsize == eyeball/current_mapsize) && neighbor >= 0){
+		if((neighbor/mapsize == eyeball/mapsize) && neighbor >= 0){
 			if((cost[eyeball]+weight[neighbor]) < cost[neighbor]){
 				queue[neighbor] = 1;
 				cost[neighbor] = cost[eyeball] + weight[neighbor];
@@ -323,7 +488,7 @@ void loop() {
 			}
 		}
 		
-		neighbor = eyeball-current_mapsize;//check backward
+		neighbor = eyeball-mapsize;//check backward
 		if(neighbor >= 0){
 			if((cost[eyeball]+weight[neighbor]) < cost[neighbor]){
 				queue[neighbor] = 1;
@@ -336,7 +501,7 @@ void loop() {
 		
 		more = false;
 		min=end;
-		for(unsigned short int i=0;i<current_mapsquare;i++){
+		for(unsigned short int i=0;i<mapsquare;i++){
 			if(queue[i] == 1){
 				more = true;
 				if(cost[i] < cost[min])
@@ -346,11 +511,11 @@ void loop() {
 		eyeball = min;
 		queue[eyeball] = 0;
 	}
-	resetcurrent_map();
+	matrix.fillScreen(blank);
 	
 	//Print obstacles
-	for(unsigned short int i=0;i<current_mapsize;i++){
-		for(unsigned short int j=0;j<current_mapsize;j++){
+	for(unsigned short int i=0;i<mapsize;i++){
+		for(unsigned short int j=0;j<mapsize;j++){
 			w = weight[coord(i,j)];
 			if(w==building_w)
 				draw4(i,j,building);
@@ -369,25 +534,27 @@ void loop() {
 	
 	while(backtrack != start){
 		if(prev1[backtrack]==0 && prev2[backtrack]==0)
-			backtrack = backtrack - current_mapsize;
+			backtrack = backtrack - mapsize;
 		else if(prev1[backtrack]==0 && prev2[backtrack]==1)
 			backtrack = backtrack - 1;
 		else if(prev1[backtrack]==1 && prev2[backtrack]==0)
 			backtrack = backtrack + 1;
 		else if(prev1[backtrack]==1 && prev2[backtrack]==1)
-			backtrack = backtrack + current_mapsize;
+			backtrack = backtrack + mapsize;
 		//backtrack = previous[backtrack];
 		draw4(getX(backtrack),getY(backtrack),traceur);
 	}
 	
 	draw4(getX(backtrack),getY(backtrack),start_c);
 	
-	while(!Press(button1)){
+	key = NO_KEY;
+	while(key == NO_KEY){
+		key = keypad.getKey();
 	}
 	
-	resetcurrent_map();
+	matrix.fillScreen(blank);
 	
-	for(unsigned short int i=0;i<current_mapsquare;i++){
+	for(unsigned short int i=0;i<mapsquare;i++){
 		weight[i] = 1;
 	}
 	
